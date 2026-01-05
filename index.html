@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Moiz Janjua | Casio UK Operations Strategy</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap');
+
+    :root {
+      --casio-blue: #005596;
+      --casio-dark: #121212;
+      --casio-accent: #00a0e9;
+      --carbon: #1e1e1e;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0a0a0a;
+      color: #e2e8f0;
+      overflow-x: hidden;
+    }
+
+    .mono { font-family: 'JetBrains+Mono', monospace; }
+
+    /* Casio Industrial Glassmorphism */
+    .glass-nav {
+      background: rgba(10, 10, 10, 0.7);
+      backdrop-filter: blur(28px) saturate(170%);
+      -webkit-backdrop-filter: blur(28px) saturate(170%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .hero-mesh {
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(0, 85, 150, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(0, 160, 233, 0.1) 0px, transparent 50%);
+    }
+
+    .ops-card {
+      background: #161616;
+      border: 1px solid #2a2a2a;
+      transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+    .ops-card:hover {
+      border-color: var(--casio-accent);
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px -10px rgba(0, 160, 233, 0.3);
+    }
+
+    .timeline-node {
+      position: relative;
+    }
+    .timeline-node::before {
+      content: '';
+      position: absolute;
+      left: -25px;
+      top: 8px;
+      width: 12px;
+      height: 12px;
+      background: var(--casio-blue);
+      border: 3px solid #0a0a0a;
+      border-radius: 50%;
+      z-index: 2;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.6s ease-out;
+    }
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .precision-border {
+      position: relative;
+      overflow: hidden;
+    }
+    .precision-border::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--casio-accent), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.6s ease;
+    }
+    .precision-border:hover::after {
+      transform: translateX(100%);
+    }
+
+    /* Expandable Detail Section */
+    .detail-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, opacity 0.3s ease;
+      opacity: 0;
+    }
+    .detail-content.expanded {
+      max-height: 400px;
+      opacity: 1;
+      padding-top: 1rem;
+    }
+
+    .casio-btn {
+      background: linear-gradient(135deg, var(--casio-blue), var(--casio-dark));
+      border: 1px solid rgba(255,255,255,0.1);
+      clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+    }
+  </style>
+</head>
+<body class="hero-mesh">
+
+  <!-- Navigation -->
+  <nav class="glass-nav fixed w-full z-50 top-0">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <div class="px-3 py-1 bg-white text-black font-black tracking-tighter text-xl">CASIO</div>
+        <div class="h-6 w-px bg-white/20 hidden sm:block"></div>
+        <span class="text-sm font-bold tracking-[0.2em] uppercase hidden sm:block opacity-70">Operations Management</span>
+      </div>
+      <div class="hidden md:flex gap-10 font-bold text-xs uppercase tracking-widest">
+        <a href="#experience" class="hover:text-casio-accent transition-colors">Timeline</a>
+        <a href="#specialisms" class="hover:text-casio-accent transition-colors">Logistics</a>
+        <a href="#edu" class="hover:text-casio-accent transition-colors">Background</a>
+      </div>
+      <a href="mailto:moizjanjua@icloud.com" class="casio-btn px-8 py-2 text-white font-bold text-xs tracking-widest uppercase hover:opacity-80 transition-all">
+        Contact
+      </a>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="pt-48 pb-24 px-6">
+    <div class="max-w-5xl mx-auto">
+      <div class="mono text-casio-accent text-sm mb-4 reveal uppercase tracking-[0.3em]">Precision / Integrity / Efficiency</div>
+      <h1 class="text-6xl md:text-8xl font-black text-white leading-none mb-8 reveal">
+        MOIZ <br><span class="text-transparent" style="-webkit-text-stroke: 1px rgba(255,255,255,0.3)">JANJUA</span>
+      </h1>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-end reveal">
+        <p class="text-lg text-slate-400 leading-relaxed border-l-2 border-casio-blue pl-6">
+          Specializing in high-volume supply chain orchestration and technical operations. Leveraging a Master's in International Business to drive Casio UK’s commitment to operational excellence and consumer trust.
+        </p>
+        <div class="flex flex-col gap-3 mono text-xs text-slate-500">
+          <div class="flex justify-between border-b border-white/10 pb-2">
+            <span>LOCATION</span>
+            <span class="text-white">WATFORD, UK / REMOTE</span>
+          </div>
+          <div class="flex justify-between border-b border-white/10 pb-2">
+            <span>EXPERTISE</span>
+            <span class="text-white">QUICK-COMMERCE & LOGISTICS</span>
+          </div>
+          <div class="flex justify-between border-b border-white/10 pb-2">
+            <span>AVAILABILITY</span>
+            <span class="text-casio-accent">IMMEDIATE</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Operational KPIs -->
+  <section class="py-12 px-6">
+    <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="bg-white/5 border border-white/10 p-8 rounded-sm reveal">
+        <div class="text-3xl font-black text-white mb-1">17%</div>
+        <div class="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold">Dispatch Optimization</div>
+      </div>
+      <div class="bg-white/5 border border-white/10 p-8 rounded-sm reveal" style="transition-delay: 100ms;">
+        <div class="text-3xl font-black text-white mb-1">35+</div>
+        <div class="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold">Personnel Managed</div>
+      </div>
+      <div class="bg-white/5 border border-white/10 p-8 rounded-sm reveal" style="transition-delay: 200ms;">
+        <div class="text-3xl font-black text-white mb-1">7.8%</div>
+        <div class="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold">Service Level KPI Lift</div>
+      </div>
+      <div class="bg-white/5 border border-white/10 p-8 rounded-sm reveal" style="transition-delay: 300ms;">
+        <div class="text-3xl font-black text-casio-accent mb-1">8 FCs</div>
+        <div class="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold">Regional Distribution</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Experience Timeline -->
+  <section id="experience" class="py-24 px-6 border-t border-white/5">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-xs font-black tracking-[0.4em] uppercase text-slate-500 mb-16 flex items-center gap-4">
+        <span class="w-8 h-px bg-casio-accent"></span> Professional Chronology
+      </h2>
+
+      <div class="space-y-12 ml-6 border-l border-white/10">
+        
+        <!-- Traction Fintech -->
+        <div class="timeline-node pl-10 reveal">
+          <div class="mono text-xs text-casio-accent mb-2">2025 (LATE)</div>
+          <h3 class="text-2xl font-bold text-white mb-1">Onboarding Officer (UK & EU)</h3>
+          <div class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">Traction Fintech</div>
+          <p class="text-slate-500 text-sm mb-4 max-w-2xl">Managed technical integration and operational setup for 90+ daily B2B clients. Specialized in diagnosing data discrepancies and streamlining account lifecycles.</p>
+          <button onclick="toggleDetail('traction', this)" class="text-[10px] font-black uppercase tracking-widest border border-white/20 px-4 py-2 hover:bg-white hover:text-black transition-all">
+            Technical Audit <i class="fa-solid fa-plus ml-2"></i>
+          </button>
+          <div id="traction" class="detail-content text-slate-400 text-sm">
+            <ul class="space-y-2 list-none">
+              <li class="flex gap-2"><span class="text-casio-accent">■</span> Reduced client integration downtime by 15% through proactive troubleshooting.</li>
+              <li class="flex gap-2"><span class="text-casio-accent">■</span> Liaised with product teams to align technical workflows with UK compliance standards.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Gopuff -->
+        <div class="timeline-node pl-10 reveal">
+          <div class="mono text-xs text-casio-accent mb-2">2025 (EARLY)</div>
+          <h3 class="text-2xl font-bold text-white mb-1">Night Operations Supervisor</h3>
+          <div class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">Gopuff | Hackney</div>
+          <p class="text-slate-500 text-sm mb-4 max-w-2xl">Orchestrated end-to-end logistics including pick/pack and rider coordination. Owned overnight safety, compliance, and labor optimization.</p>
+        </div>
+
+        <!-- Amazon -->
+        <div class="timeline-node pl-10 reveal">
+          <div class="mono text-xs text-casio-accent mb-2">2023 — 2024</div>
+          <h3 class="text-2xl font-bold text-white mb-1">Area Manager (ECFT)</h3>
+          <div class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">Amazon | UK & Europe</div>
+          <p class="text-slate-500 text-sm mb-4 max-w-2xl">Directed a department of 35 specialists. Boosted regional on-time shipment dispatch by 17% across 8 Fulfillment Centers in Europe.</p>
+          <button onclick="toggleDetail('amazon', this)" class="text-[10px] font-black uppercase tracking-widest border border-white/20 px-4 py-2 hover:bg-white hover:text-black transition-all">
+            Efficiency Metrics <i class="fa-solid fa-plus ml-2"></i>
+          </button>
+          <div id="amazon" class="detail-content text-slate-400 text-sm">
+            <ul class="space-y-2 list-none">
+              <li class="flex gap-2"><span class="text-casio-accent">■</span> Improved overall productivity by 13% through lean coaching methodologies.</li>
+              <li class="flex gap-2"><span class="text-casio-accent">■</span> Executed structured CAPA (Corrective and Preventive Action) strategies to maintain peak SLAs.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- SplitTrip -->
+        <div class="timeline-node pl-10 reveal">
+          <div class="mono text-xs text-casio-accent mb-2">2021 — 2025</div>
+          <h3 class="text-2xl font-bold text-white mb-1">Founder & UX Developer</h3>
+          <div class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">SplitTrip | London</div>
+          <p class="text-slate-500 text-sm mb-4 max-w-2xl">Strategic leadership of a 7-person cross-functional team. Defined the operational blueprint for product development and market entry.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Technical Specialisms -->
+  <section id="specialisms" class="py-24 px-6 bg-white text-black">
+    <div class="max-w-6xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-20">
+        <div>
+          <h2 class="text-5xl font-black uppercase mb-8 leading-none">Operational <br>Expertise</h2>
+          <p class="text-slate-600 mb-12 font-medium">Equipped with the analytical rigor required for Casio's hardware distribution and B2B excellence.</p>
+          
+          <div class="space-y-8">
+            <div class="precision-border pb-4">
+              <h4 class="font-black text-xs uppercase tracking-[0.2em] mb-2">Inventory Logic</h4>
+              <p class="text-sm text-slate-500">Expertise in JIT (Just-In-Time) inventory management and stock reconciliation for high-value hardware.</p>
+            </div>
+            <div class="precision-border pb-4">
+              <h4 class="font-black text-xs uppercase tracking-[0.2em] mb-2">Lean Methodologies</h4>
+              <p class="text-sm text-slate-500">Certified Six Sigma Green Belt focused on removing waste in the supply chain.</p>
+            </div>
+            <div class="precision-border pb-4">
+              <h4 class="font-black text-xs uppercase tracking-[0.2em] mb-2">Technical Leadership</h4>
+              <p class="text-sm text-slate-500">Bridging the gap between software (Jira, Asana, Excel) and physical operations management.</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-black text-white p-8 flex flex-col justify-between">
+            <i class="fa-solid fa-microchip text-3xl text-casio-accent"></i>
+            <div>
+              <div class="text-xl font-bold mb-1">Precision</div>
+              <div class="text-[10px] opacity-50 uppercase tracking-widest">WMS / ERP Systems</div>
+            </div>
+          </div>
+          <div class="bg-slate-100 p-8 flex flex-col justify-between">
+            <i class="fa-solid fa-truck-fast text-3xl text-casio-blue"></i>
+            <div>
+              <div class="text-xl font-bold mb-1">Scale</div>
+              <div class="text-[10px] opacity-50 uppercase tracking-widest">Last-Mile Logistics</div>
+            </div>
+          </div>
+          <div class="bg-slate-100 p-8 flex flex-col justify-between">
+            <i class="fa-solid fa-chart-pie text-3xl text-casio-blue"></i>
+            <div>
+              <div class="text-xl font-bold mb-1">Insights</div>
+              <div class="text-[10px] opacity-50 uppercase tracking-widest">KPI Forecasting</div>
+            </div>
+          </div>
+          <div class="bg-black text-white p-8 flex flex-col justify-between">
+            <i class="fa-solid fa-shield-halved text-3xl text-casio-accent"></i>
+            <div>
+              <div class="text-xl font-bold mb-1">Security</div>
+              <div class="text-[10px] opacity-50 uppercase tracking-widest">Asset Management</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Education -->
+  <section id="edu" class="py-24 px-6 border-t border-white/5">
+    <div class="max-w-6xl mx-auto">
+      <h2 class="mono text-xs tracking-[0.5em] text-casio-accent uppercase mb-12">Academic Credentials</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="ops-card p-10">
+          <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4">Coventry University</div>
+          <h4 class="text-xl font-bold text-white mb-2">M.Sc. International Business Management</h4>
+          <p class="text-xs text-slate-500">Specialization in Global Logistics and Strategic Growth.</p>
+        </div>
+        <div class="ops-card p-10">
+          <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4">University of Central Punjab</div>
+          <h4 class="text-xl font-bold text-white mb-2">M.Com Accounting and Finance</h4>
+          <p class="text-xs text-slate-500">Financial oversight and resource management foundations.</p>
+        </div>
+        <div class="ops-card p-10 flex flex-col justify-between">
+          <div>
+            <div class="text-[10px] font-black text-casio-accent uppercase tracking-widest mb-4">Certifications</div>
+            <ul class="text-sm text-white font-bold space-y-3">
+              <li>• Google UX Professional</li>
+              <li>• Six Sigma Green Belt</li>
+              <li>• Amazon SLII Leadership</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-black border-t border-white/10 py-20 px-6">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-10">
+      <div class="text-left">
+        <div class="px-4 py-2 bg-white text-black font-black text-2xl inline-block mb-4">CASIO</div>
+        <p class="text-slate-500 text-sm max-w-xs uppercase tracking-widest font-bold">Candidate for UK Operations Management</p>
+      </div>
+      <div class="flex gap-8 items-center">
+        <a href="mailto:moizjanjua@icloud.com" class="text-casio-accent font-black text-xs uppercase tracking-[0.3em] hover:opacity-70">moizjanjua@icloud.com</a>
+        <a href="https://linkedin.com/in/moizjanjua/" class="text-white hover:text-casio-accent transition-colors text-2xl"><i class="fa-brands fa-linkedin"></i></a>
+      </div>
+    </div>
+    <div class="max-w-7xl mx-auto mt-20 pt-8 border-t border-white/5 text-[10px] mono text-slate-700 text-center uppercase tracking-widest">
+      &copy; 2026 MOIZ JANJUA // SYSTEM STATUS: OPTIMIZED
+    </div>
+  </footer>
+
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    function toggleDetail(id, btn) {
+      const content = document.getElementById(id);
+      content.classList.toggle('expanded');
+      const icon = btn.querySelector('i');
+      if(content.classList.contains('expanded')) {
+        icon.classList.replace('fa-plus', 'fa-minus');
+      } else {
+        icon.classList.replace('fa-minus', 'fa-plus');
+      }
+    }
+  </script>
+</body>
+</html>
