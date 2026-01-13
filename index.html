@@ -227,6 +227,11 @@
         filter: grayscale(100%);
       }
 
+      /* Collapsed State */
+      .input-collapsed {
+        display: none;
+      }
+
       /* Toaster Animation */
       @keyframes bounce-small {
           0%, 100% { transform: translateY(0); }
@@ -508,35 +513,38 @@
                                 </div>
                             </div>
                             
-                            <!-- Mortgage Rate -->
-                            <div class="input-group transition-opacity duration-300" id="group-rate">
-                                <label class="block text-xs font-medium text-white/50 mb-1 tracking-wide uppercase">Rate</label>
-                                <div class="flex items-center relative">
-                                    <!-- Desktop -->
-                                    <input type="number" inputmode="decimal" id="input-rate" value="5.2" min="0" max="15" step="0.1" class="input-field desktop-only">
-                                    <!-- Mobile Picker Trigger -->
-                                    <button id="trigger-rate" class="mobile-picker-trigger mobile-only" onclick="openDrumPicker('rate', 0.1, 15, 0.1, '%')">
-                                        <span id="display-mobile-rate">5.2</span>
-                                        <span class="text-white/40 text-sm">%</span>
-                                    </button>
-                                    
-                                    <span class="text-white/40 text-sm absolute right-0 pointer-events-none desktop-only">%</span>
+                            <!-- Mortgage Inputs Container (Collapsible) -->
+                            <div class="col-span-2 grid grid-cols-2 gap-4 transition-all duration-300" id="mortgage-inputs-container">
+                                <!-- Mortgage Rate -->
+                                <div class="input-group" id="group-rate">
+                                    <label class="block text-xs font-medium text-white/50 mb-1 tracking-wide uppercase">Rate</label>
+                                    <div class="flex items-center relative">
+                                        <!-- Desktop -->
+                                        <input type="number" inputmode="decimal" id="input-rate" value="5.2" min="0" max="15" step="0.1" class="input-field desktop-only">
+                                        <!-- Mobile Picker Trigger -->
+                                        <button id="trigger-rate" class="mobile-picker-trigger mobile-only" onclick="openDrumPicker('rate', 0.1, 15, 0.1, '%')">
+                                            <span id="display-mobile-rate">5.2</span>
+                                            <span class="text-white/40 text-sm">%</span>
+                                        </button>
+                                        
+                                        <span class="text-white/40 text-sm absolute right-0 pointer-events-none desktop-only">%</span>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <!-- Term -->
-                            <div class="input-group transition-opacity duration-300" id="group-term">
-                                <label class="block text-xs font-medium text-white/50 mb-1 tracking-wide uppercase">Term</label>
-                                <div class="flex items-center relative">
-                                    <!-- Desktop -->
-                                    <input type="number" inputmode="numeric" id="input-term" value="25" min="5" max="40" class="input-field desktop-only">
-                                    <!-- Mobile Picker Trigger -->
-                                    <button id="trigger-term" class="mobile-picker-trigger mobile-only" onclick="openDrumPicker('term', 5, 40, 1, 'Yrs')">
-                                        <span id="display-mobile-term">25</span>
-                                        <span class="text-white/40 text-sm">Yrs</span>
-                                    </button>
+                                <!-- Term -->
+                                <div class="input-group" id="group-term">
+                                    <label class="block text-xs font-medium text-white/50 mb-1 tracking-wide uppercase">Term</label>
+                                    <div class="flex items-center relative">
+                                        <!-- Desktop -->
+                                        <input type="number" inputmode="numeric" id="input-term" value="25" min="5" max="40" class="input-field desktop-only">
+                                        <!-- Mobile Picker Trigger -->
+                                        <button id="trigger-term" class="mobile-picker-trigger mobile-only" onclick="openDrumPicker('term', 5, 40, 1, 'Yrs')">
+                                            <span id="display-mobile-term">25</span>
+                                            <span class="text-white/40 text-sm">Yrs</span>
+                                        </button>
 
-                                    <span class="text-white/40 text-sm absolute right-0 pointer-events-none desktop-only">Yrs</span>
+                                        <span class="text-white/40 text-sm absolute right-0 pointer-events-none desktop-only">Yrs</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -709,7 +717,7 @@
                          <!-- Header -->
                          <div class="col-span-6 grid grid-cols-6 text-white/40 uppercase tracking-widest text-[10px] font-semibold mb-2 px-4">
                             <div>Share</div>
-                            <div class="text-right">Mortgage</div>
+                            <div class="text-right text-red-400">Monthly lost in mortgage</div>
                             <div class="text-right">Rent</div>
                             <div class="text-right">Fees</div>
                             <div class="text-right text-white/70">Total</div>
@@ -798,7 +806,7 @@
                         <div>Deposit %</div>
                         <div class="text-right">Deposit Req.</div>
                         <div class="text-right">Mortgage Amt</div>
-                        <div class="text-right">Monthly Interest</div>
+                        <div class="text-right text-red-400">Monthly lost in interest</div>
                         <div class="text-right">Lifetime Interest</div>
                     </div>
 
@@ -1206,27 +1214,23 @@
             const toggleCircle = document.getElementById('cash-toggle-circle');
             const activeLabel = document.getElementById('cash-active-label');
             
-            // Groups to hide/disable
-            const rateGroup = document.getElementById('group-rate');
-            const termGroup = document.getElementById('group-term');
-            const depositGroup = document.getElementById('group-deposit');
+            // Collapsible Container
+            const mortgageContainer = document.getElementById('mortgage-inputs-container');
             
             if (state.isCashPurchase) {
                 if(toggleBg) toggleBg.classList.replace('bg-white/20', 'bg-primary');
                 if(toggleCircle) toggleCircle.classList.add('translate-x-5');
                 if(activeLabel) activeLabel.classList.remove('hidden');
                 
-                if(rateGroup) rateGroup.classList.add('input-disabled');
-                if(termGroup) termGroup.classList.add('input-disabled');
-                if(depositGroup) depositGroup.classList.add('input-disabled');
+                // Collapse logic
+                if(mortgageContainer) mortgageContainer.classList.add('input-collapsed');
             } else {
                 if(toggleBg) toggleBg.classList.replace('bg-primary', 'bg-white/20');
                 if(toggleCircle) toggleCircle.classList.remove('translate-x-5');
                 if(activeLabel) activeLabel.classList.add('hidden');
                 
-                if(rateGroup) rateGroup.classList.remove('input-disabled');
-                if(termGroup) termGroup.classList.remove('input-disabled');
-                if(depositGroup) depositGroup.classList.remove('input-disabled');
+                // Expand logic
+                if(mortgageContainer) mortgageContainer.classList.remove('input-collapsed');
             }
 
             // Results
