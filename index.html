@@ -86,6 +86,33 @@
         outline: none;
       }
       
+      /* Mobile Picker Styling */
+      .mobile-picker {
+        appearance: none;
+        -webkit-appearance: none;
+        background: transparent;
+        color: white;
+        font-size: 1.25rem;
+        font-weight: 500;
+        width: 100%;
+        border: none;
+        outline: none;
+        padding-right: 1rem;
+        cursor: pointer;
+      }
+      .mobile-picker option {
+        background-color: #1c1c1e;
+        color: white;
+      }
+
+      /* Responsiveness Utils */
+      @media (min-width: 768px) {
+        .mobile-only { display: none !important; }
+      }
+      @media (max-width: 767px) {
+        .desktop-only { display: none !important; }
+      }
+      
       /* Big Editable Input */
       .input-hero {
         background: transparent;
@@ -242,7 +269,6 @@
             </div>
             <h1 class="text-2xl font-bold tracking-tight text-white/90 mr-auto">SharedOwnership <span class="text-white/40 font-light">Pro</span></h1>
             
-            <!-- Quirky Visitor Counter -->
             <div class="visitor-badge" title="Unique Visitors">
                 <div class="relative flex items-center justify-center w-4 h-4">
                     <span class="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-20 animate-ping"></span>
@@ -299,16 +325,14 @@
             </div>
         </div>
 
-        <!-- Main Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- Inputs Grid (Side by Side) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8 slide-up" style="animation-delay: 0.2s;">
             
-            <!-- Left Column: Inputs -->
-            <div class="lg:col-span-5 space-y-8 slide-up" style="animation-delay: 0.2s;">
-                
-                <!-- Financing -->
-                <div class="space-y-4 reveal">
-                    <h3 class="text-lg font-semibold text-white/80 pl-2">Financing</h3>
-                    <div class="glass-card p-6">
+            <!-- Financing -->
+            <div class="space-y-4 reveal h-full">
+                <h3 class="text-lg font-semibold text-white/80 pl-2">Financing</h3>
+                <div class="glass-card p-6 flex flex-col h-full">
+                    <div>
                         <!-- Toggle -->
                         <div class="flex items-center justify-between mb-6 pb-6 border-b border-white/10 group cursor-pointer" id="toggle-cash-purchase">
                             <div class="flex items-center gap-3">
@@ -321,6 +345,7 @@
                         </div>
 
                         <div class="grid grid-cols-2 gap-4">
+                            <!-- Deposit -->
                             <div class="input-group col-span-2 transition-opacity duration-300" id="group-deposit">
                                 <div class="flex justify-between items-center mb-1">
                                     <label class="block text-xs font-medium text-white/50 tracking-wide uppercase">Deposit (%)</label>
@@ -328,120 +353,152 @@
                                         Detail breakdown
                                     </button>
                                 </div>
-                                <div class="flex items-center">
-                                    <input type="number" id="input-deposit" value="15" min="0" max="100" class="input-field">
-                                    <span class="text-white/40 text-sm">%</span>
-                                </div>
-                            </div>
-                            <!-- Mortgage Rate (Hidden if Cash) -->
-                            <div class="input-group transition-opacity duration-300" id="group-rate">
-                                <label class="block text-xs font-medium text-white/50 mb-1 tracking-wide uppercase">Rate</label>
-                                <div class="flex items-center">
-                                    <input type="number" id="input-rate" value="5.2" min="0" max="15" step="0.1" class="input-field">
-                                    <span class="text-white/40 text-sm">%</span>
-                                </div>
-                            </div>
-                            <!-- Term (Hidden if Cash) -->
-                            <div class="input-group transition-opacity duration-300" id="group-term">
-                                <label class="block text-xs font-medium text-white/50 mb-1 tracking-wide uppercase">Term</label>
-                                <div class="flex items-center">
-                                    <input type="number" id="input-term" value="25" min="5" max="40" class="input-field">
-                                    <span class="text-white/40 text-sm">Yrs</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Monthly Costs -->
-                <div class="space-y-4 reveal">
-                    <h3 class="text-lg font-semibold text-white/80 pl-2">Monthly Outgoings</h3>
-                    <div class="glass-card p-6">
-                        <div class="grid grid-cols-2 gap-4">
-                            <!-- Rent Rate -->
-                            <div class="col-span-2 flex items-end gap-4 bg-white/[0.03] p-4 rounded-2xl border border-white/[0.05]">
-                                <div class="flex-1">
-                                    <label class="text-xs text-white/50 uppercase tracking-wide">Rent Rate</label>
-                                    <div class="flex items-center mt-1">
-                                        <input type="number" id="input-rent-rate" value="2.75" step="0.05" class="bg-transparent text-xl font-medium text-white focus:outline-none w-20">
-                                        <span class="text-white/40 text-sm">%</span>
+                                <div class="flex items-center relative">
+                                    <!-- Desktop Input -->
+                                    <input type="number" id="input-deposit" value="15" min="0" max="100" class="input-field desktop-only">
+                                    <!-- Mobile Picker -->
+                                    <select id="select-deposit" class="mobile-picker mobile-only"></select>
+                                    
+                                    <span class="text-white/40 text-sm absolute right-0 pointer-events-none desktop-only">%</span>
+                                    <span class="text-white/40 text-sm absolute right-8 pointer-events-none mobile-only">%</span>
+                                    <div class="mobile-only absolute right-0 pointer-events-none text-white/40">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                                     </div>
                                 </div>
-                                <div class="text-right">
-                                    <div class="text-xs text-white/40">Applied on</div>
-                                    <div class="text-sm font-medium text-white/80" id="display-rent-base">£243,750</div>
+                            </div>
+                            
+                            <!-- Mortgage Rate -->
+                            <div class="input-group transition-opacity duration-300" id="group-rate">
+                                <label class="block text-xs font-medium text-white/50 mb-1 tracking-wide uppercase">Rate</label>
+                                <div class="flex items-center relative">
+                                    <!-- Desktop -->
+                                    <input type="number" id="input-rate" value="5.2" min="0" max="15" step="0.1" class="input-field desktop-only">
+                                    <!-- Mobile -->
+                                    <select id="select-rate" class="mobile-picker mobile-only"></select>
+                                    
+                                    <span class="text-white/40 text-sm absolute right-0 pointer-events-none desktop-only">%</span>
+                                    <span class="text-white/40 text-sm absolute right-6 pointer-events-none mobile-only">%</span>
+                                    <div class="mobile-only absolute right-0 pointer-events-none text-white/40">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="input-group">
-                                <label class="block text-xs font-medium text-white/50 mb-1 tracking-wide uppercase">Service Chg</label>
-                                <div class="flex items-center">
-                                    <span class="text-white/40 mr-1.5">£</span>
-                                    <input type="number" id="input-service-charge" value="180" class="input-field">
-                                </div>
-                            </div>
-                            <div class="input-group">
-                                <label class="block text-xs font-medium text-white/50 mb-1 tracking-wide uppercase">Ground Rent</label>
-                                <div class="flex items-center">
-                                    <span class="text-white/40 mr-1.5">£</span>
-                                    <input type="number" id="input-ground-rent" value="0" class="input-field">
-                                </div>
-                            </div>
-                            <div class="input-group col-span-2 relative">
-                                <label class="block text-xs font-medium text-white/50 mb-1 tracking-wide uppercase">Council Tax</label>
-                                <div class="flex items-center">
-                                    <span class="text-white/40 mr-1.5">£</span>
-                                    <input type="number" id="input-council-tax" value="150" class="input-field">
-                                </div>
-                                <button onclick="toggleModal('postcode-modal')" class="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-lg text-white/70 hover:text-white transition-colors">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                            <!-- Term -->
+                            <div class="input-group transition-opacity duration-300" id="group-term">
+                                <label class="block text-xs font-medium text-white/50 mb-1 tracking-wide uppercase">Term</label>
+                                <div class="flex items-center relative">
+                                    <!-- Desktop -->
+                                    <input type="number" id="input-term" value="25" min="5" max="40" class="input-field desktop-only">
+                                    <!-- Mobile -->
+                                    <select id="select-term" class="mobile-picker mobile-only"></select>
 
-                    <div class="glass-card p-6 reveal">
-                        <div class="flex items-center gap-2 mb-4 text-white/60">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                            <span class="text-xs uppercase font-semibold tracking-wide">Utilities (Est.)</span>
-                        </div>
-                        <div class="grid grid-cols-3 gap-3">
-                            <div class="input-group p-3">
-                                <label class="block text-[10px] text-white/50 mb-1">Energy</label>
-                                <input type="number" id="input-electricity" value="85" class="input-field text-lg">
-                            </div>
-                            <div class="input-group p-3">
-                                <label class="block text-[10px] text-white/50 mb-1">Web</label>
-                                <input type="number" id="input-internet" value="40" class="input-field text-lg">
-                            </div>
-                            <div class="input-group p-3">
-                                <label class="block text-[10px] text-white/50 mb-1">Water</label>
-                                <input type="number" id="input-water" value="35" class="input-field text-lg">
+                                    <span class="text-white/40 text-sm absolute right-0 pointer-events-none desktop-only">Yrs</span>
+                                    <span class="text-white/40 text-sm absolute right-6 pointer-events-none mobile-only">Yrs</span>
+                                    <div class="mobile-only absolute right-0 pointer-events-none text-white/40">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="input-group bg-white/[0.02] reveal">
+                    <!-- Moved Annual Income Here -->
+                    <div class="input-group bg-white/[0.05] mt-4">
                          <label class="block text-xs font-medium text-white/50 mb-1 tracking-wide uppercase">Annual Income (Pre-Tax)</label>
                          <div class="flex items-center">
                             <span class="text-white/40 mr-1.5">£</span>
-                            <input type="number" id="input-income" value="55000" class="input-field">
+                            <input type="number" id="input-income" value="55000" class="input-field font-semibold text-emerald-400">
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Right Column: Visuals & Breakdown -->
-            <div class="lg:col-span-7 space-y-8 slide-up" style="animation-delay: 0.3s;">
-                
-                <!-- Separator with ID for Scrolling -->
-                <div id="results-separator" class="relative flex items-center justify-center pt-8 pb-4 reveal">
-                     <div class="h-px bg-white/10 w-full absolute top-1/2 left-0 z-0"></div>
-                     <span class="relative z-10 bg-black px-4 text-xs font-medium text-white/40 uppercase tracking-widest">Results</span>
+            <!-- Monthly Costs -->
+            <div class="space-y-4 reveal h-full flex flex-col">
+                <h3 class="text-lg font-semibold text-white/80 pl-2">Monthly Outgoings</h3>
+                <div class="glass-card p-6 flex-1">
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- Rent Rate -->
+                        <div class="col-span-2 flex items-end gap-4 bg-white/[0.03] p-4 rounded-2xl border border-white/[0.05]">
+                            <div class="flex-1">
+                                <label class="text-xs text-white/50 uppercase tracking-wide">Rent Rate</label>
+                                <div class="flex items-center mt-1">
+                                    <input type="number" id="input-rent-rate" value="2.75" step="0.05" class="bg-transparent text-xl font-medium text-white focus:outline-none w-20">
+                                    <span class="text-white/40 text-sm">%</span>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xs text-white/40">Applied on</div>
+                                <div class="text-sm font-medium text-white/80" id="display-rent-base">£243,750</div>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="block text-xs font-medium text-white/50 mb-1 tracking-wide uppercase">Service Chg</label>
+                            <div class="flex items-center">
+                                <span class="text-white/40 mr-1.5">£</span>
+                                <input type="number" id="input-service-charge" value="180" class="input-field">
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label class="block text-xs font-medium text-white/50 mb-1 tracking-wide uppercase">Ground Rent</label>
+                            <div class="flex items-center">
+                                <span class="text-white/40 mr-1.5">£</span>
+                                <input type="number" id="input-ground-rent" value="0" class="input-field">
+                            </div>
+                        </div>
+                        <div class="input-group col-span-2 relative">
+                            <label class="block text-xs font-medium text-white/50 mb-1 tracking-wide uppercase">Council Tax</label>
+                            <div class="flex items-center">
+                                <span class="text-white/40 mr-1.5">£</span>
+                                <input type="number" id="input-council-tax" value="150" class="input-field">
+                            </div>
+                            <button onclick="toggleModal('postcode-modal')" class="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-lg text-white/70 hover:text-white transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Total Cost Card -->
-                <div class="glass-card p-8 bg-gradient-to-br from-[#1c1c1e] via-[#2c2c2e] to-[#1c1c1e] border-white/10 reveal">
+                <div class="glass-card p-6 reveal">
+                    <div class="flex items-center gap-2 mb-4 text-white/60">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                        <span class="text-xs uppercase font-semibold tracking-wide">Utilities (Est.)</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="input-group p-3">
+                            <label class="block text-[10px] text-white/50 mb-1">Energy</label>
+                            <input type="number" id="input-electricity" value="85" class="input-field text-lg">
+                        </div>
+                        <div class="input-group p-3">
+                            <label class="block text-[10px] text-white/50 mb-1">Web</label>
+                            <input type="number" id="input-internet" value="40" class="input-field text-lg">
+                        </div>
+                        <div class="input-group p-3">
+                            <label class="block text-[10px] text-white/50 mb-1">Water</label>
+                            <input type="number" id="input-water" value="35" class="input-field text-lg">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Results Section (Full Width Bottom) -->
+        <div class="slide-up space-y-8" style="animation-delay: 0.3s;">
+            
+            <!-- Separator with ID for Scrolling -->
+            <div id="results-separator" class="relative flex items-center justify-center pt-8 pb-4 reveal">
+                    <div class="h-px bg-white/10 w-full absolute top-1/2 left-0 z-0"></div>
+                    <span class="relative z-10 bg-black px-4 text-xs font-medium text-white/40 uppercase tracking-widest">Results</span>
+            </div>
+
+            <!-- Total Cost Card & Breakdown Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                <!-- Main Result Card -->
+                <div class="lg:col-span-7 glass-card p-8 bg-gradient-to-br from-[#1c1c1e] via-[#2c2c2e] to-[#1c1c1e] border-white/10 reveal h-full flex flex-col justify-center">
                     <div class="flex flex-col-reverse md:flex-row items-center justify-between gap-8">
                         <div class="flex-1 text-center md:text-left space-y-2">
                             <h3 class="text-white/50 text-sm uppercase tracking-wider font-medium">Total Monthly Cost</h3>
@@ -454,39 +511,41 @@
 
                         <!-- Pie Chart Container -->
                         <div class="relative w-40 h-40 md:w-64 md:h-64 flex items-center justify-center">
-                             <canvas id="costChart"></canvas>
-                             <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                                <canvas id="costChart"></canvas>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                                 <span class="text-2xl md:text-3xl font-bold text-white" id="pie-center-text">25%</span>
                                 <span class="text-[10px] text-white/40 uppercase tracking-widest">Share</span>
-                             </div>
+                                </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Detail Grid -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 reveal">
-                    <div class="p-4 rounded-3xl bg-white/[0.03] border border-indigo-500/30 backdrop-blur-md">
+                <!-- Breakdown Boxes -->
+                <div class="lg:col-span-5 grid grid-cols-2 gap-4 reveal content-center">
+                    <div class="p-5 rounded-3xl bg-white/[0.03] border border-indigo-500/30 backdrop-blur-md flex flex-col justify-center">
                         <div class="text-[10px] uppercase tracking-wider font-semibold opacity-70 mb-1 text-indigo-400">Mortgage</div>
-                        <div class="text-xl font-bold text-white" id="box-mortgage">£480</div>
+                        <div class="text-2xl font-bold text-white" id="box-mortgage">£480</div>
                         <div class="text-[10px] text-white/30 mt-1 truncate" id="sub-mortgage">On £69,062</div>
                     </div>
-                    <div class="p-4 rounded-3xl bg-white/[0.03] border border-pink-500/30 backdrop-blur-md">
+                    <div class="p-5 rounded-3xl bg-white/[0.03] border border-pink-500/30 backdrop-blur-md flex flex-col justify-center">
                         <div class="text-[10px] uppercase tracking-wider font-semibold opacity-70 mb-1 text-pink-400">Rent</div>
-                        <div class="text-xl font-bold text-white" id="box-rent">£559</div>
+                        <div class="text-2xl font-bold text-white" id="box-rent">£559</div>
                         <div class="text-[10px] text-white/30 mt-1 truncate" id="sub-rent">On £243,750</div>
                     </div>
-                    <div class="p-4 rounded-3xl bg-white/[0.03] border border-emerald-500/30 backdrop-blur-md">
+                    <div class="p-5 rounded-3xl bg-white/[0.03] border border-emerald-500/30 backdrop-blur-md flex flex-col justify-center">
                         <div class="text-[10px] uppercase tracking-wider font-semibold opacity-70 mb-1 text-emerald-400">Fees & Tax</div>
-                        <div class="text-xl font-bold text-white" id="box-fees">£330</div>
+                        <div class="text-2xl font-bold text-white" id="box-fees">£330</div>
                         <div class="text-[10px] text-white/30 mt-1 truncate">Service + Tax</div>
                     </div>
-                    <div class="p-4 rounded-3xl bg-white/[0.03] border border-cyan-500/30 backdrop-blur-md">
+                    <div class="p-5 rounded-3xl bg-white/[0.03] border border-cyan-500/30 backdrop-blur-md flex flex-col justify-center">
                         <div class="text-[10px] uppercase tracking-wider font-semibold opacity-70 mb-1 text-cyan-400">Utilities</div>
-                        <div class="text-xl font-bold text-white" id="box-utilities">£160</div>
+                        <div class="text-2xl font-bold text-white" id="box-utilities">£160</div>
                         <div class="text-[10px] text-white/30 mt-1 truncate">Est. Bills</div>
                     </div>
                 </div>
+
             </div>
+
         </div>
 
         <!-- Comparison Table -->
@@ -734,7 +793,14 @@
         function updateUI() {
             const results = calculateResults(state);
 
-            // Inputs Sync
+            // Inputs Sync (Both Input and Select)
+            const syncField = (id, val) => {
+                const input = document.getElementById(`input-${id}`);
+                const select = document.getElementById(`select-${id}`);
+                if (input && document.activeElement !== input) input.value = val;
+                if (select && document.activeElement !== select) select.value = val;
+            };
+
             const shareDisplay = document.getElementById('display-share-percentage');
             if(shareDisplay) shareDisplay.innerText = state.sharePercentage + '%';
             
@@ -751,6 +817,11 @@
             if(document.activeElement !== propInput) {
                propInput.value = state.propertyValue.toLocaleString('en-US');
             }
+
+            // Sync dual inputs
+            syncField('deposit', state.depositPercentage);
+            syncField('rate', state.mortgageRate);
+            syncField('term', state.mortgageTerm);
 
             // Cash Toggle Visuals
             const toggleBg = document.getElementById('cash-toggle-bg');
@@ -936,6 +1007,27 @@
             }
         };
 
+        // --- Populate Mobile Selects ---
+        function initSelects() {
+            const populate = (id, min, max, step) => {
+                const el = document.getElementById(id);
+                if(!el) return;
+                el.innerHTML = '';
+                for(let i = min; i <= max; i += step) {
+                    // Fix float precision issue for rate
+                    let val = Math.round(i * 100) / 100;
+                    let opt = document.createElement('option');
+                    opt.value = val;
+                    opt.text = val;
+                    el.appendChild(opt);
+                }
+            };
+            
+            populate('select-deposit', 0, 100, 1);
+            populate('select-rate', 0.1, 10, 0.1);
+            populate('select-term', 1, 40, 1);
+        }
+
         // --- Event Listeners ---
         const bind = (id, key, type = 'float') => {
             const el = document.getElementById(id);
@@ -1024,15 +1116,24 @@
         document.addEventListener('DOMContentLoaded', () => {
             console.log("App Initializing...");
             initChart();
+            initSelects();
             setupEditableProperty();
             setupScrollToaster();
             setupRevealAnimations();
             initVisitorCounter(); // Start the visitor count
             
             bind('input-share-percentage', 'sharePercentage', 'int');
+            
+            // Bind dual inputs
             bind('input-deposit', 'depositPercentage');
+            bind('select-deposit', 'depositPercentage');
+            
             bind('input-rate', 'mortgageRate');
+            bind('select-rate', 'mortgageRate');
+            
             bind('input-term', 'mortgageTerm');
+            bind('select-term', 'mortgageTerm');
+
             bind('input-rent-rate', 'rentRate');
             bind('input-service-charge', 'serviceCharge');
             bind('input-ground-rent', 'groundRent');
