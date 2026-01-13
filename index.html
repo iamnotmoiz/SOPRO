@@ -494,21 +494,17 @@
                             <!-- Deposit -->
                             <div class="input-group col-span-2 transition-opacity duration-300" id="group-deposit">
                                 <div class="flex justify-between items-center mb-1">
-                                    <label class="block text-xs font-medium text-white/50 tracking-wide uppercase">Deposit (%)</label>
-                                    <button onclick="toggleModal('deposit-breakdown-modal')" class="text-[10px] text-primary hover:text-white transition-colors cursor-pointer hover:underline">
-                                        Detail breakdown
-                                    </button>
+                                    <label class="block text-xs font-medium text-white/50 tracking-wide uppercase">Deposit (£)</label>
+                                    <span class="text-[10px] text-primary font-mono tracking-wider" id="display-deposit-percent">15%</span>
                                 </div>
                                 <div class="flex items-center relative">
-                                    <!-- Desktop Input -->
-                                    <input type="number" inputmode="decimal" id="input-deposit" value="15" min="0" max="100" class="input-field desktop-only">
-                                    <!-- Mobile Picker Trigger -->
-                                    <button id="trigger-deposit" class="mobile-picker-trigger mobile-only" onclick="openDrumPicker('deposit', 0, 100, 1, '%')">
-                                        <span id="display-mobile-deposit">15</span>
-                                        <span class="text-white/40 text-sm">%</span>
-                                    </button>
+                                    <span class="text-white/40 text-lg mr-2 font-medium">£</span>
+                                    <!-- Changed to text/decimal input for currency -->
+                                    <input type="text" inputmode="decimal" id="input-deposit" value="12,000" class="input-field font-medium">
                                     
-                                    <span class="text-white/40 text-sm absolute right-0 pointer-events-none desktop-only">%</span>
+                                    <button onclick="toggleModal('deposit-breakdown-modal')" class="absolute right-0 text-[10px] text-white/40 hover:text-white transition-colors cursor-pointer bg-white/5 px-2 py-1 rounded">
+                                        Breakdown
+                                    </button>
                                 </div>
                             </div>
                             
@@ -544,6 +540,14 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    
+                    <!-- Warning Text -->
+                    <div class="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl">
+                        <p class="text-[10px] text-yellow-200/80 leading-relaxed">
+                            <strong class="text-yellow-400 block mb-1">💡 Save Money: Buy Cash</strong>
+                            We included the mortgage calculator below to show how much money is lost in interest. We encourage you to buy with all cash if possible to save money.
+                        </p>
                     </div>
                     
                     <!-- Annual Income -->
@@ -834,7 +838,7 @@
         const defaultState = {
             propertyValue: 325000,
             sharePercentage: 25,
-            depositPercentage: 15,
+            depositAmount: 15000, // Now in £
             mortgageRate: 5.2,
             mortgageTerm: 25,
             rentRate: 2.75,
@@ -845,7 +849,7 @@
             internet: 40,
             water: 35,
             annualIncome: 55000,
-            isCashPurchase: false
+            isCashPurchase: true // Default to true per request
         };
 
         // Initialize state from LocalStorage or Default
@@ -853,7 +857,14 @@
         try {
             const saved = localStorage.getItem(STORAGE_KEY);
             if(saved) {
-                state = { ...defaultState, ...JSON.parse(saved) };
+                // Migrate old state (percentage) to new state (amount) if needed
+                const parsed = JSON.parse(saved);
+                if (parsed.depositPercentage !== undefined && parsed.depositAmount === undefined) {
+                    const shareVal = (parsed.propertyValue || 325000) * ((parsed.sharePercentage || 25) / 100);
+                    parsed.depositAmount = shareVal * (parsed.depositPercentage / 100);
+                    delete parsed.depositPercentage;
+                }
+                state = { ...defaultState, ...parsed };
                 console.log("Restored state from local storage");
             }
         } catch(e) {
@@ -962,15 +973,21 @@
 
         function calculateResults(inputs) {
             const shareValue = inputs.propertyValue * (inputs.sharePercentage / 100);
-            let depositAmount, mortgageAmount, monthlyMortgage;
+            let depositAmount = inputs.depositAmount;
+            let mortgageAmount, monthlyMortgage;
+
+            // Ensure deposit doesn't exceed share value in calc
+            if (depositAmount > shareValue) depositAmount = shareValue;
 
             if (inputs.isCashPurchase) {
-                depositAmount = shareValue; // You pay full share price upfront
+                // If cash purchase is toggled ON, it implies buying outright.
+                // We assume Deposit = Share Value for the "cost" perspective, or Mortgage = 0.
                 mortgageAmount = 0;
                 monthlyMortgage = 0;
+                // Note: We don't overwrite inputs.depositAmount here to preserve user entry
             } else {
-                depositAmount = shareValue * (inputs.depositPercentage / 100);
                 mortgageAmount = shareValue - depositAmount;
+                if (mortgageAmount < 0) mortgageAmount = 0;
                 monthlyMortgage = calculateMortgagePayment(mortgageAmount, inputs.mortgageRate, inputs.mortgageTerm);
             }
 
@@ -982,7 +999,7 @@
             
             return {
                 shareValue,
-                depositAmount,
+                depositAmount, // Pass back actual used deposit for display if needed
                 mortgageAmount,
                 monthlyMortgage,
                 monthlyRent,
@@ -1032,7 +1049,11 @@
             title.innerText = `Select ${id.charAt(0).toUpperCase() + id.slice(1)}`;
             scroller.innerHTML = '';
             
-            let currentVal = state[id === 'rate' ? 'mortgageRate' : id === 'deposit' ? 'depositPercentage' : 'mortgageTerm'];
+            // Map state key
+            let currentVal;
+            if(id === 'rate') currentVal = state.mortgageRate;
+            else if(id === 'term') currentVal = state.mortgageTerm;
+            // Deposit is no longer a picker
             
             // Build items
             for (let i = min; i <= max; i += step) {
@@ -1100,7 +1121,6 @@
                 let key = '';
                 if(currentPickerId === 'rate') key = 'mortgageRate';
                 else if(currentPickerId === 'term') key = 'mortgageTerm';
-                else if(currentPickerId === 'deposit') key = 'depositPercentage';
                 
                 state[key] = pickerValue;
                 
@@ -1141,8 +1161,24 @@
                propInput.value = state.propertyValue.toLocaleString('en-US');
             }
 
+            // Sync Deposit Input (Currency)
+            const depositInput = document.getElementById('input-deposit');
+            if (depositInput && document.activeElement !== depositInput) {
+                depositInput.value = state.depositAmount.toLocaleString('en-US');
+            }
+            
+            // Calculate and display deposit percentage based on value
+            const depPercent = results.shareValue > 0 ? (state.depositAmount / results.shareValue) * 100 : 0;
+            const depPercentEl = document.getElementById('display-deposit-percent');
+            if(depPercentEl) {
+                depPercentEl.innerText = depPercent.toFixed(1) + '%';
+                // Color code safety
+                if (depPercent < 5) depPercentEl.className = "text-[10px] text-red-400 font-mono tracking-wider";
+                else if (depPercent < 10) depPercentEl.className = "text-[10px] text-yellow-400 font-mono tracking-wider";
+                else depPercentEl.className = "text-[10px] text-emerald-400 font-mono tracking-wider";
+            }
+
             // Sync dual inputs
-            syncField('deposit', state.depositPercentage);
             syncField('rate', state.mortgageRate);
             syncField('term', state.mortgageTerm);
 
@@ -1281,7 +1317,7 @@
 
             const shareValue = state.propertyValue * (state.sharePercentage / 100);
 
-            for (let i = 0; i <= 100; i++) {
+            for (let i = 0; i <= 100; i += 5) {
                 const depositPct = i;
                 const depositAmount = shareValue * (depositPct / 100);
                 const mortgageAmount = shareValue - depositAmount;
@@ -1291,7 +1327,9 @@
                 const totalRepayment = monthlyPmt * state.mortgageTerm * 12;
                 const totalInterest = Math.max(0, totalRepayment - mortgageAmount);
 
-                const isCurrent = Math.round(state.depositPercentage) === i;
+                // Highlight close match
+                const currentPct = (state.depositAmount / shareValue) * 100;
+                const isCurrent = Math.abs(currentPct - i) < 2.5;
 
                 const row = document.createElement('div');
                 row.className = `grid grid-cols-5 gap-2 px-4 py-3 border-b border-white/5 text-sm hover:bg-white/5 transition-colors ${isCurrent ? 'bg-primary/20' : ''}`;
@@ -1357,7 +1395,13 @@
             const el = document.getElementById(id);
             if (!el) return;
             el.addEventListener('input', (e) => {
-                let val = type === 'float' ? parseFloat(e.target.value) : parseInt(e.target.value);
+                let val;
+                if(type === 'int') {
+                    val = parseInt(e.target.value.replace(/,/g, ''));
+                } else {
+                    val = parseFloat(e.target.value.replace(/,/g, ''));
+                }
+                
                 if (isNaN(val)) val = 0;
                 state[key] = val;
                 
@@ -1370,14 +1414,15 @@
             });
         };
         
-        // Editable Property Value Logic
-        function setupEditableProperty() {
-            const el = document.getElementById('input-property-value');
+        // Editable Property Value Logic (Generic)
+        function setupCurrencyInput(id, key) {
+            const el = document.getElementById(id);
             if(!el) return;
             
             // On Focus: Remove commas for editing
             el.addEventListener('focus', () => {
-                el.value = state.propertyValue.toString();
+                el.value = state[key].toString();
+                triggerHaptic(10);
             });
 
             // On Blur: Format and save
@@ -1386,7 +1431,7 @@
                 let val = parseInt(raw);
                 if (isNaN(val) || val < 0) val = 0;
                 
-                state.propertyValue = val;
+                state[key] = val;
                 updateUI();
             });
 
@@ -1454,7 +1499,8 @@
         document.addEventListener('DOMContentLoaded', () => {
             console.log("App Initializing...");
             initChart();
-            setupEditableProperty();
+            setupCurrencyInput('input-property-value', 'propertyValue');
+            setupCurrencyInput('input-deposit', 'depositAmount');
             setupScrollToaster();
             setupRevealAnimations();
             setupGlobalHaptics();
@@ -1463,7 +1509,7 @@
             bind('input-share-percentage', 'sharePercentage', 'int');
             
             // Bind dual inputs
-            bind('input-deposit', 'depositPercentage');
+            // Deposit is now direct input via setupCurrencyInput above
             bind('input-rate', 'mortgageRate');
             bind('input-term', 'mortgageTerm');
 
