@@ -229,7 +229,7 @@
 
       /* Collapsed State */
       .input-collapsed {
-        display: none;
+        display: none !important;
       }
 
       /* Toaster Animation */
@@ -495,26 +495,26 @@
                             <span id="cash-active-label" class="text-xs text-primary font-bold uppercase tracking-wide hidden animate-pulse">Active</span>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4">
-                            <!-- Deposit -->
-                            <div class="input-group col-span-2 transition-opacity duration-300" id="group-deposit">
-                                <div class="flex justify-between items-center mb-1">
-                                    <label class="block text-xs font-medium text-white/50 tracking-wide uppercase">Deposit (£)</label>
-                                    <span class="text-[10px] text-primary font-mono tracking-wider" id="display-deposit-percent">15%</span>
+                        <!-- All Mortgage Inputs Collapsible Group (Deposit, Rate, Term, Warning) -->
+                        <div id="financing-details-container" class="transition-all duration-300 overflow-hidden">
+                            <div class="grid grid-cols-2 gap-4 pb-4">
+                                <!-- Deposit -->
+                                <div class="input-group col-span-2 transition-opacity duration-300" id="group-deposit">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <label class="block text-xs font-medium text-white/50 tracking-wide uppercase">Deposit (£)</label>
+                                        <span class="text-[10px] text-primary font-mono tracking-wider" id="display-deposit-percent">15%</span>
+                                    </div>
+                                    <div class="flex items-center relative">
+                                        <span class="text-white/40 text-lg mr-2 font-medium">£</span>
+                                        <!-- Changed to text/decimal input for currency -->
+                                        <input type="text" inputmode="decimal" id="input-deposit" value="12,000" class="input-field font-medium">
+                                        
+                                        <button onclick="toggleModal('deposit-breakdown-modal')" class="absolute right-0 text-[10px] bg-red-500/20 text-red-300 hover:bg-red-500/30 hover:text-white transition-colors cursor-pointer px-2 py-1 rounded">
+                                            Breakdown
+                                        </button>
+                                    </div>
                                 </div>
-                                <div class="flex items-center relative">
-                                    <span class="text-white/40 text-lg mr-2 font-medium">£</span>
-                                    <!-- Changed to text/decimal input for currency -->
-                                    <input type="text" inputmode="decimal" id="input-deposit" value="12,000" class="input-field font-medium">
-                                    
-                                    <button onclick="toggleModal('deposit-breakdown-modal')" class="absolute right-0 text-[10px] text-white/40 hover:text-white transition-colors cursor-pointer bg-white/5 px-2 py-1 rounded">
-                                        Breakdown
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <!-- Mortgage Inputs Container (Collapsible) -->
-                            <div class="col-span-2 grid grid-cols-2 gap-4 transition-all duration-300" id="mortgage-inputs-container">
+                                
                                 <!-- Mortgage Rate -->
                                 <div class="input-group" id="group-rate">
                                     <label class="block text-xs font-medium text-white/50 mb-1 tracking-wide uppercase">Rate</label>
@@ -547,15 +547,15 @@
                                     </div>
                                 </div>
                             </div>
+                            
+                            <!-- Warning Text -->
+                            <div class="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl mb-2">
+                                <p class="text-[10px] text-yellow-200/80 leading-relaxed">
+                                    <strong class="text-yellow-400 block mb-1">💡 Save Money: Buy Cash</strong>
+                                    We included the mortgage calculator below to show how much money is lost in interest. We encourage you to buy with all cash if possible to save money.
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <!-- Warning Text -->
-                    <div class="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl">
-                        <p class="text-[10px] text-yellow-200/80 leading-relaxed">
-                            <strong class="text-yellow-400 block mb-1">💡 Save Money: Buy Cash</strong>
-                            We included the mortgage calculator below to show how much money is lost in interest. We encourage you to buy with all cash if possible to save money.
-                        </p>
                     </div>
                     
                     <!-- Annual Income -->
@@ -718,7 +718,7 @@
                          <div class="col-span-6 grid grid-cols-6 text-white/40 uppercase tracking-widest text-[10px] font-semibold mb-2 px-4">
                             <div>Share</div>
                             <div class="text-right text-red-400">Monthly lost in mortgage</div>
-                            <div class="text-right">Rent</div>
+                            <div class="text-right text-purple-400">Rent</div>
                             <div class="text-right">Fees</div>
                             <div class="text-right text-white/70">Total</div>
                             <div class="text-right">Upfront</div>
@@ -1214,23 +1214,23 @@
             const toggleCircle = document.getElementById('cash-toggle-circle');
             const activeLabel = document.getElementById('cash-active-label');
             
-            // Collapsible Container
-            const mortgageContainer = document.getElementById('mortgage-inputs-container');
+            // Collapsible Container: Use the newly wrapped ID
+            const financingDetails = document.getElementById('financing-details-container');
             
             if (state.isCashPurchase) {
                 if(toggleBg) toggleBg.classList.replace('bg-white/20', 'bg-primary');
                 if(toggleCircle) toggleCircle.classList.add('translate-x-5');
                 if(activeLabel) activeLabel.classList.remove('hidden');
                 
-                // Collapse logic
-                if(mortgageContainer) mortgageContainer.classList.add('input-collapsed');
+                // Collapse logic: Hide deposit, rate, term, and warning
+                if(financingDetails) financingDetails.classList.add('input-collapsed');
             } else {
                 if(toggleBg) toggleBg.classList.replace('bg-primary', 'bg-white/20');
                 if(toggleCircle) toggleCircle.classList.remove('translate-x-5');
                 if(activeLabel) activeLabel.classList.add('hidden');
                 
                 // Expand logic
-                if(mortgageContainer) mortgageContainer.classList.remove('input-collapsed');
+                if(financingDetails) financingDetails.classList.remove('input-collapsed');
             }
 
             // Results
@@ -1298,13 +1298,16 @@
                     updateUI();
                 };
 
+                // Determine mortgage text color
+                const mortgageColor = res.monthlyMortgage > 0 ? 'text-red-400' : 'text-emerald-400';
+
                 row.innerHTML = `
                     <div class="font-bold text-white flex items-center gap-2">
                         ${pct}% 
                         ${isCurrent ? '<div class="w-1.5 h-1.5 rounded-full bg-primary"></div>' : ''}
                     </div>
-                    <div class="text-right text-indigo-300">${formatCurrency(res.monthlyMortgage)}</div>
-                    <div class="text-right text-pink-300">${formatCurrency(res.monthlyRent)}</div>
+                    <div class="text-right ${mortgageColor}">${formatCurrency(res.monthlyMortgage)}</div>
+                    <div class="text-right text-purple-400">${formatCurrency(res.monthlyRent)}</div>
                     <div class="text-right text-emerald-300">${formatCurrency(utils)}</div>
                     <div class="text-right font-bold text-white text-lg">${formatCurrency(res.totalMonthlyCost)}</div>
                     <div class="text-right text-amber-300">${formatCurrency(res.depositAmount)}</div>
@@ -1335,6 +1338,9 @@
                 const currentPct = (state.depositAmount / shareValue) * 100;
                 const isCurrent = Math.abs(currentPct - i) < 2.5;
 
+                // Color logic for Interest
+                const interestColor = totalInterest > 0 ? 'text-red-400' : 'text-emerald-400';
+
                 const row = document.createElement('div');
                 row.className = `grid grid-cols-5 gap-2 px-4 py-3 border-b border-white/5 text-sm hover:bg-white/5 transition-colors ${isCurrent ? 'bg-primary/20' : ''}`;
                 
@@ -1342,8 +1348,8 @@
                     <div class="font-medium text-white/90">${depositPct}%</div>
                     <div class="text-right text-amber-300 font-medium">${formatCurrency(depositAmount)}</div>
                     <div class="text-right text-white/70">${formatCurrency(mortgageAmount)}</div>
-                    <div class="text-right text-indigo-300 font-medium">${formatCurrency(monthlyPmt)}</div>
-                    <div class="text-right text-white/50">${formatCurrency(totalInterest)}</div>
+                    <div class="text-right text-red-400 font-medium">${formatCurrency(monthlyPmt)}</div>
+                    <div class="text-right ${interestColor}">${formatCurrency(totalInterest)}</div>
                 `;
                 container.appendChild(row);
             }
