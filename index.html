@@ -277,6 +277,12 @@
                 <span class="text-[10px] uppercase text-white/40 font-semibold tracking-wider">Visitors</span>
                 <span class="visitor-count" id="visitor-count">...</span>
             </div>
+
+             <!-- Save Indicator -->
+             <div class="visitor-badge" id="save-indicator" title="Local Storage Active">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white/40"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                <span class="text-[10px] uppercase text-white/40 font-semibold tracking-wider" id="last-saved-text">Last saved --:--</span>
+            </div>
         </header>
 
         <!-- Hero Section -->
@@ -671,7 +677,9 @@
         const apiKey = ""; 
 
         // --- State Management ---
-        const state = {
+        const STORAGE_KEY = 'sop_state_v1';
+        
+        const defaultState = {
             propertyValue: 325000,
             sharePercentage: 25,
             depositPercentage: 15,
@@ -687,6 +695,41 @@
             annualIncome: 55000,
             isCashPurchase: false
         };
+
+        // Initialize state from LocalStorage or Default
+        let state = defaultState;
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if(saved) {
+                state = { ...defaultState, ...JSON.parse(saved) };
+                console.log("Restored state from local storage");
+            }
+        } catch(e) {
+            console.warn("Could not load state", e);
+        }
+
+        // --- Auto-Save Logic ---
+        let saveTimeout;
+        
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+                
+                // Update Badge
+                const now = new Date();
+                const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const el = document.getElementById('last-saved-text');
+                if(el) el.innerText = `Last saved ${timeStr}`;
+                
+            } catch(e) {
+                console.warn("Save failed", e);
+            }
+        }
+
+        function triggerSave() {
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(saveState, 1000); // Debounce by 1s
+        }
 
         // --- Chart.js Instance ---
         let chartInstance = null;
@@ -824,6 +867,25 @@
             syncField('rate', state.mortgageRate);
             syncField('term', state.mortgageTerm);
 
+            // Input Sync for other fields (load from state)
+            const setVal = (id, val) => {
+                const el = document.getElementById(id);
+                if(el && document.activeElement !== el) el.value = val;
+            }
+            
+            // Slider special handling
+            const slider = document.getElementById('input-share-percentage');
+            if(slider && document.activeElement !== slider) slider.value = state.sharePercentage;
+
+            setVal('input-rent-rate', state.rentRate);
+            setVal('input-service-charge', state.serviceCharge);
+            setVal('input-ground-rent', state.groundRent);
+            setVal('input-council-tax', state.councilTax);
+            setVal('input-electricity', state.electricity);
+            setVal('input-internet', state.internet);
+            setVal('input-water', state.water);
+            setVal('input-income', state.annualIncome);
+
             // Cash Toggle Visuals
             const toggleBg = document.getElementById('cash-toggle-bg');
             const toggleCircle = document.getElementById('cash-toggle-circle');
@@ -890,6 +952,9 @@
 
             // Comparison Table
             renderComparisonTable();
+            
+            // Trigger Save
+            triggerSave();
         }
 
         function renderComparisonTable() {
