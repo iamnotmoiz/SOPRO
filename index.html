@@ -66,6 +66,49 @@
         border-color: rgba(255, 255, 255, 0.12);
       }
 
+      /* Sparkle Highlight Box */
+      @keyframes border-rotate {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+      
+      .sparkle-card {
+        position: relative;
+        background: rgba(28, 28, 30, 0.8);
+        backdrop-filter: blur(40px);
+        border-radius: 32px;
+        z-index: 1;
+        overflow: hidden;
+      }
+      
+      .sparkle-card::before {
+        content: "";
+        position: absolute;
+        inset: -2px;
+        z-index: -1;
+        background: linear-gradient(
+          60deg,
+          #5e5ce6,
+          #bf5af2,
+          #34d399,
+          #5e5ce6
+        );
+        background-size: 300% 300%;
+        animation: border-rotate 4s ease infinite;
+        opacity: 0.6;
+        border-radius: 34px;
+      }
+      
+      .sparkle-card::after {
+        content: "";
+        position: absolute;
+        inset: 2px;
+        background: rgba(20, 20, 22, 0.95);
+        border-radius: 30px;
+        z-index: -1;
+      }
+
       .input-group {
         background: rgba(255, 255, 255, 0.03);
         border: 1px solid rgba(255, 255, 255, 0.05);
@@ -84,12 +127,11 @@
         font-weight: 500;
         width: 100%;
         outline: none;
+        caret-color: #34d399; /* Custom caret color */
       }
       
-      /* Mobile Picker Styling */
-      .mobile-picker {
-        appearance: none;
-        -webkit-appearance: none;
+      /* Mobile Picker Styling Replacement */
+      .mobile-picker-trigger {
         background: transparent;
         color: white;
         font-size: 1.25rem;
@@ -99,10 +141,10 @@
         outline: none;
         padding-right: 1rem;
         cursor: pointer;
-      }
-      .mobile-picker option {
-        background-color: #1c1c1e;
-        color: white;
+        text-align: left;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
       }
 
       /* Responsiveness Utils */
@@ -122,6 +164,7 @@
         outline: none;
         width: 100%;
         transition: border-color 0.2s;
+        caret-color: #34d399;
       }
       .input-hero:focus {
         border-color: white;
@@ -231,6 +274,102 @@
           color: #34d399;
           letter-spacing: 0.5px;
       }
+
+      /* --- iOS Drum Picker Styles --- */
+      .drum-picker-overlay {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 100;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+      }
+      .drum-picker-overlay.open {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .drum-container {
+        background: rgba(28, 28, 30, 0.95);
+        backdrop-filter: blur(20px);
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        padding: 20px 0;
+        transform: translateY(100%);
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+      }
+      .drum-picker-overlay.open .drum-container {
+        transform: translateY(0);
+      }
+
+      .drum-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 20px 15px 20px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+      }
+
+      .drum-view {
+        height: 200px; /* Viewport height */
+        position: relative;
+        overflow: hidden;
+        margin-top: 10px;
+      }
+      
+      /* Selection Highlight Bar */
+      .drum-view::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 40px;
+        margin-top: -20px;
+        background: rgba(255,255,255,0.08);
+        border-top: 1px solid rgba(255,255,255,0.1);
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        pointer-events: none;
+        z-index: 10;
+      }
+
+      .drum-scroller {
+        height: 100%;
+        overflow-y: scroll;
+        scroll-snap-type: y mandatory;
+        padding: 80px 0; /* Padding to allow top/bottom items to reach center */
+      }
+      .drum-scroller::-webkit-scrollbar {
+        display: none;
+      }
+
+      .drum-item {
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        color: rgba(255,255,255,0.4);
+        scroll-snap-align: center;
+        transition: color 0.2s, transform 0.2s;
+        font-weight: 500;
+      }
+      .drum-item.active {
+        color: white;
+        font-weight: 700;
+        transform: scale(1.1);
+      }
+
     </style>
     
     <script>
@@ -294,7 +433,7 @@
                         <h2 class="text-sm font-medium text-white/50 uppercase tracking-wider">Property Value</h2>
                         <div class="flex items-center gap-1">
                             <span class="text-4xl md:text-5xl lg:text-7xl font-bold text-white tracking-tighter drop-shadow-lg">£</span>
-                            <input type="text" id="input-property-value" value="325,000" class="input-hero text-4xl md:text-5xl lg:text-7xl font-bold tracking-tighter drop-shadow-lg bg-transparent border-b border-white/10 focus:border-white focus:outline-none w-full max-w-lg" placeholder="0">
+                            <input type="text" inputmode="decimal" id="input-property-value" value="325,000" class="input-hero text-4xl md:text-5xl lg:text-7xl font-bold tracking-tighter drop-shadow-lg bg-transparent border-b border-white/10 focus:border-white focus:outline-none w-full max-w-lg" placeholder="0">
                         </div>
                         <p class="text-white/40 text-sm">Type to adjust value</p>
                     </div>
@@ -362,15 +501,14 @@
                                 </div>
                                 <div class="flex items-center relative">
                                     <!-- Desktop Input -->
-                                    <input type="number" id="input-deposit" value="15" min="0" max="100" class="input-field desktop-only">
-                                    <!-- Mobile Picker -->
-                                    <select id="select-deposit" class="mobile-picker mobile-only"></select>
+                                    <input type="number" inputmode="decimal" id="input-deposit" value="15" min="0" max="100" class="input-field desktop-only">
+                                    <!-- Mobile Picker Trigger -->
+                                    <button id="trigger-deposit" class="mobile-picker-trigger mobile-only" onclick="openDrumPicker('deposit', 0, 100, 1, '%')">
+                                        <span id="display-mobile-deposit">15</span>
+                                        <span class="text-white/40 text-sm">%</span>
+                                    </button>
                                     
                                     <span class="text-white/40 text-sm absolute right-0 pointer-events-none desktop-only">%</span>
-                                    <span class="text-white/40 text-sm absolute right-8 pointer-events-none mobile-only">%</span>
-                                    <div class="mobile-only absolute right-0 pointer-events-none text-white/40">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                                    </div>
                                 </div>
                             </div>
                             
@@ -379,15 +517,14 @@
                                 <label class="block text-xs font-medium text-white/50 mb-1 tracking-wide uppercase">Rate</label>
                                 <div class="flex items-center relative">
                                     <!-- Desktop -->
-                                    <input type="number" id="input-rate" value="5.2" min="0" max="15" step="0.1" class="input-field desktop-only">
-                                    <!-- Mobile -->
-                                    <select id="select-rate" class="mobile-picker mobile-only"></select>
+                                    <input type="number" inputmode="decimal" id="input-rate" value="5.2" min="0" max="15" step="0.1" class="input-field desktop-only">
+                                    <!-- Mobile Picker Trigger -->
+                                    <button id="trigger-rate" class="mobile-picker-trigger mobile-only" onclick="openDrumPicker('rate', 0.1, 15, 0.1, '%')">
+                                        <span id="display-mobile-rate">5.2</span>
+                                        <span class="text-white/40 text-sm">%</span>
+                                    </button>
                                     
                                     <span class="text-white/40 text-sm absolute right-0 pointer-events-none desktop-only">%</span>
-                                    <span class="text-white/40 text-sm absolute right-6 pointer-events-none mobile-only">%</span>
-                                    <div class="mobile-only absolute right-0 pointer-events-none text-white/40">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                                    </div>
                                 </div>
                             </div>
 
@@ -396,15 +533,14 @@
                                 <label class="block text-xs font-medium text-white/50 mb-1 tracking-wide uppercase">Term</label>
                                 <div class="flex items-center relative">
                                     <!-- Desktop -->
-                                    <input type="number" id="input-term" value="25" min="5" max="40" class="input-field desktop-only">
-                                    <!-- Mobile -->
-                                    <select id="select-term" class="mobile-picker mobile-only"></select>
+                                    <input type="number" inputmode="numeric" id="input-term" value="25" min="5" max="40" class="input-field desktop-only">
+                                    <!-- Mobile Picker Trigger -->
+                                    <button id="trigger-term" class="mobile-picker-trigger mobile-only" onclick="openDrumPicker('term', 5, 40, 1, 'Yrs')">
+                                        <span id="display-mobile-term">25</span>
+                                        <span class="text-white/40 text-sm">Yrs</span>
+                                    </button>
 
                                     <span class="text-white/40 text-sm absolute right-0 pointer-events-none desktop-only">Yrs</span>
-                                    <span class="text-white/40 text-sm absolute right-6 pointer-events-none mobile-only">Yrs</span>
-                                    <div class="mobile-only absolute right-0 pointer-events-none text-white/40">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -415,7 +551,7 @@
                          <label class="block text-xs font-medium text-white/50 mb-1 tracking-wide uppercase">Annual Income (Pre-Tax)</label>
                          <div class="flex items-center">
                             <span class="text-white/40 mr-1.5">£</span>
-                            <input type="number" id="input-income" value="55000" class="input-field font-semibold text-emerald-400">
+                            <input type="number" inputmode="decimal" id="input-income" value="55000" class="input-field font-semibold text-emerald-400">
                         </div>
                     </div>
                 </div>
@@ -431,7 +567,7 @@
                             <div class="flex-1">
                                 <label class="text-xs text-white/50 uppercase tracking-wide">Rent Rate</label>
                                 <div class="flex items-center mt-1">
-                                    <input type="number" id="input-rent-rate" value="2.75" step="0.05" class="bg-transparent text-xl font-medium text-white focus:outline-none w-20">
+                                    <input type="number" inputmode="decimal" id="input-rent-rate" value="2.75" step="0.05" class="bg-transparent text-xl font-medium text-white focus:outline-none w-20 caret-[#34d399]">
                                     <span class="text-white/40 text-sm">%</span>
                                 </div>
                             </div>
@@ -445,21 +581,21 @@
                             <label class="block text-xs font-medium text-white/50 mb-1 tracking-wide uppercase">Service Chg</label>
                             <div class="flex items-center">
                                 <span class="text-white/40 mr-1.5">£</span>
-                                <input type="number" id="input-service-charge" value="180" class="input-field">
+                                <input type="number" inputmode="decimal" id="input-service-charge" value="180" class="input-field">
                             </div>
                         </div>
                         <div class="input-group">
                             <label class="block text-xs font-medium text-white/50 mb-1 tracking-wide uppercase">Ground Rent</label>
                             <div class="flex items-center">
                                 <span class="text-white/40 mr-1.5">£</span>
-                                <input type="number" id="input-ground-rent" value="0" class="input-field">
+                                <input type="number" inputmode="decimal" id="input-ground-rent" value="0" class="input-field">
                             </div>
                         </div>
                         <div class="input-group col-span-2 relative">
                             <label class="block text-xs font-medium text-white/50 mb-1 tracking-wide uppercase">Council Tax</label>
                             <div class="flex items-center">
                                 <span class="text-white/40 mr-1.5">£</span>
-                                <input type="number" id="input-council-tax" value="150" class="input-field">
+                                <input type="number" inputmode="decimal" id="input-council-tax" value="150" class="input-field">
                             </div>
                             <button onclick="toggleModal('postcode-modal')" class="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-lg text-white/70 hover:text-white transition-colors">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
@@ -476,15 +612,15 @@
                     <div class="grid grid-cols-3 gap-3">
                         <div class="input-group p-3">
                             <label class="block text-[10px] text-white/50 mb-1">Energy</label>
-                            <input type="number" id="input-electricity" value="85" class="input-field text-lg">
+                            <input type="number" inputmode="decimal" id="input-electricity" value="85" class="input-field text-lg">
                         </div>
                         <div class="input-group p-3">
                             <label class="block text-[10px] text-white/50 mb-1">Web</label>
-                            <input type="number" id="input-internet" value="40" class="input-field text-lg">
+                            <input type="number" inputmode="decimal" id="input-internet" value="40" class="input-field text-lg">
                         </div>
                         <div class="input-group p-3">
                             <label class="block text-[10px] text-white/50 mb-1">Water</label>
-                            <input type="number" id="input-water" value="35" class="input-field text-lg">
+                            <input type="number" inputmode="decimal" id="input-water" value="35" class="input-field text-lg">
                         </div>
                     </div>
                 </div>
@@ -504,9 +640,9 @@
             <!-- Total Cost Card & Breakdown Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 
-                <!-- Main Result Card -->
-                <div class="lg:col-span-7 glass-card p-8 bg-gradient-to-br from-[#1c1c1e] via-[#2c2c2e] to-[#1c1c1e] border-white/10 reveal h-full flex flex-col justify-center">
-                    <div class="flex flex-col-reverse md:flex-row items-center justify-between gap-8">
+                <!-- Main Result Card (Sparkly) -->
+                <div class="lg:col-span-7 sparkle-card p-8 bg-gradient-to-br from-[#1c1c1e] via-[#2c2c2e] to-[#1c1c1e] border border-white/10 reveal h-full flex flex-col justify-center shadow-[0_0_50px_rgba(94,92,230,0.2)]">
+                    <div class="flex flex-col-reverse md:flex-row items-center justify-between gap-8 relative z-10">
                         <div class="flex-1 text-center md:text-left space-y-2">
                             <h3 class="text-white/50 text-sm uppercase tracking-wider font-medium">Total Monthly Cost</h3>
                             <div class="text-5xl md:text-7xl font-bold text-white tracking-tight drop-shadow-2xl" id="display-total-cost">£1,632</div>
@@ -627,7 +763,7 @@
             <div class="space-y-6">
                 <p class="text-white/60 text-sm leading-relaxed">Enter postcode. AI will check typical rates.</p>
                 <div class="relative">
-                    <input type="text" id="input-postcode" placeholder="e.g., SW1A 1AA" class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-4 pr-4 text-white text-lg focus:outline-none focus:border-primary uppercase placeholder-white/20">
+                    <input type="text" inputmode="text" id="input-postcode" placeholder="e.g., SW1A 1AA" class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-4 pr-4 text-white text-lg focus:outline-none focus:border-primary uppercase placeholder-white/20">
                 </div>
                 <button onclick="handleEstimateTax()" id="btn-estimate-tax" class="w-full py-4 bg-primary hover:bg-primary/80 rounded-2xl font-semibold text-white transition-all flex items-center justify-center">
                     Get Estimate
@@ -666,6 +802,22 @@
                     <div class="overflow-y-auto max-h-[50vh] rounded-b-xl border border-t-0 border-white/10 bg-black/20 custom-scrollbar" id="deposit-breakdown-rows">
                         <!-- Rows injected by JS -->
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom iOS Drum Picker Modal -->
+    <div id="drum-picker-modal" class="drum-picker-overlay">
+        <div class="drum-container">
+            <div class="drum-header">
+                <button onclick="closeDrumPicker(false)" class="text-white/50 text-sm font-medium p-2">Cancel</button>
+                <span class="text-white font-semibold text-sm tracking-wide" id="drum-title">Select</span>
+                <button onclick="closeDrumPicker(true)" class="text-primary text-sm font-bold p-2">Done</button>
+            </div>
+            <div class="drum-view">
+                <div class="drum-scroller" id="drum-scroller">
+                    <!-- Items injected here -->
                 </div>
             </div>
         </div>
@@ -833,6 +985,120 @@
             return new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: 0 }).format(val);
         }
 
+        // --- Drum Picker Logic ---
+        let currentPickerId = null;
+        let pickerValue = null;
+        const tickSound = new Audio("data:audio/wav;base64,UklGRl9vT1...REPLACEME_WITH_SHORT_CLICK_OR_GENERATE_ON_FLY");
+        
+        // Generate a simple click sound using AudioContext instead of Base64 to ensure it works
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playTick() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.05);
+            
+            gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 0.05);
+        }
+
+        window.openDrumPicker = (id, min, max, step, unit) => {
+            currentPickerId = id;
+            const modal = document.getElementById('drum-picker-modal');
+            const scroller = document.getElementById('drum-scroller');
+            const title = document.getElementById('drum-title');
+            
+            title.innerText = `Select ${id.charAt(0).toUpperCase() + id.slice(1)}`;
+            scroller.innerHTML = '';
+            
+            let currentVal = state[id === 'rate' ? 'mortgageRate' : id === 'deposit' ? 'depositPercentage' : 'mortgageTerm'];
+            
+            // Build items
+            for (let i = min; i <= max; i += step) {
+                // Fix float
+                let val = Math.round(i * 100) / 100;
+                const item = document.createElement('div');
+                item.className = 'drum-item';
+                item.innerText = `${val}${unit ? unit : ''}`;
+                item.dataset.value = val;
+                
+                if (val === currentVal) {
+                    item.classList.add('active');
+                }
+                scroller.appendChild(item);
+            }
+
+            modal.classList.add('open');
+            
+            // Scroll to current
+            setTimeout(() => {
+                const active = scroller.querySelector('.active');
+                if (active) {
+                    active.scrollIntoView({ block: 'center' });
+                }
+            }, 100);
+
+            // Scroll Listener for Sound & Selection
+            let lastScroll = 0;
+            scroller.onscroll = (e) => {
+                const center = scroller.scrollTop + (scroller.clientHeight / 2);
+                const items = Array.from(scroller.children);
+                
+                let closest = null;
+                let minDist = Infinity;
+
+                items.forEach(item => {
+                    const box = item.getBoundingClientRect();
+                    const itemCenter = item.offsetTop + (item.offsetHeight / 2) - scroller.offsetTop; 
+                    const dist = Math.abs(center - itemCenter); // Approx calculation relative to scroller
+                    
+                    if (dist < minDist) {
+                        minDist = dist;
+                        closest = item;
+                    }
+                    item.classList.remove('active');
+                });
+
+                if (closest) {
+                    closest.classList.add('active');
+                    if (pickerValue !== closest.dataset.value) {
+                         pickerValue = parseFloat(closest.dataset.value);
+                         playTick();
+                    }
+                }
+            };
+        };
+
+        window.closeDrumPicker = (save) => {
+            const modal = document.getElementById('drum-picker-modal');
+            modal.classList.remove('open');
+            
+            if (save && currentPickerId && pickerValue !== null) {
+                // Map ID to State Key
+                let key = '';
+                if(currentPickerId === 'rate') key = 'mortgageRate';
+                else if(currentPickerId === 'term') key = 'mortgageTerm';
+                else if(currentPickerId === 'deposit') key = 'depositPercentage';
+                
+                state[key] = pickerValue;
+                
+                // Update text on trigger button
+                document.getElementById(`display-mobile-${currentPickerId}`).innerText = pickerValue;
+                
+                updateUI();
+            }
+        };
+
+
         // --- UI Updates ---
         function updateUI() {
             const results = calculateResults(state);
@@ -840,9 +1106,9 @@
             // Inputs Sync (Both Input and Select)
             const syncField = (id, val) => {
                 const input = document.getElementById(`input-${id}`);
-                const select = document.getElementById(`select-${id}`);
+                const display = document.getElementById(`display-mobile-${id}`); // Mobile text
                 if (input && document.activeElement !== input) input.value = val;
-                if (select && document.activeElement !== select) select.value = val;
+                if (display) display.innerText = val;
             };
 
             const shareDisplay = document.getElementById('display-share-percentage');
@@ -1073,27 +1339,6 @@
             }
         };
 
-        // --- Populate Mobile Selects ---
-        function initSelects() {
-            const populate = (id, min, max, step) => {
-                const el = document.getElementById(id);
-                if(!el) return;
-                el.innerHTML = '';
-                for(let i = min; i <= max; i += step) {
-                    // Fix float precision issue for rate
-                    let val = Math.round(i * 100) / 100;
-                    let opt = document.createElement('option');
-                    opt.value = val;
-                    opt.text = val;
-                    el.appendChild(opt);
-                }
-            };
-            
-            populate('select-deposit', 0, 100, 1);
-            populate('select-rate', 0.1, 10, 0.1);
-            populate('select-term', 1, 40, 1);
-        }
-
         // --- Event Listeners ---
         const bind = (id, key, type = 'float') => {
             const el = document.getElementById(id);
@@ -1182,7 +1427,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             console.log("App Initializing...");
             initChart();
-            initSelects();
             setupEditableProperty();
             setupScrollToaster();
             setupRevealAnimations();
@@ -1192,13 +1436,8 @@
             
             // Bind dual inputs
             bind('input-deposit', 'depositPercentage');
-            bind('select-deposit', 'depositPercentage');
-            
             bind('input-rate', 'mortgageRate');
-            bind('select-rate', 'mortgageRate');
-            
             bind('input-term', 'mortgageTerm');
-            bind('select-term', 'mortgageTerm');
 
             bind('input-rent-rate', 'rentRate');
             bind('input-service-charge', 'serviceCharge');
